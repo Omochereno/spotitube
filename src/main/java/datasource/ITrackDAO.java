@@ -1,10 +1,13 @@
 package datasource;
 
+import domain.Track;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public interface ITrackDAO {
 
-    public List list();
+    List<Track> list() throws SQLException;
 
-    public List findByTitle();
+    List<Track> findByTitle(String title) throws SQLException;
 }

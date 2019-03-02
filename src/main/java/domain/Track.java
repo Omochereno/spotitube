@@ -1,50 +1,43 @@
 package domain;
 
-public class Track {
+import java.util.List;
+
+public abstract class Track {
 
     //Variables
     private String performer;
     private String title;
     private String url;
-    private long duration;
+    private int duration;
 
-    public Track(String performer, String title, String url, long duration) {
+    public Track(String performer, String title, String url, int duration) {
         this.performer = performer;
         this.title = title;
         this.url = url;
         this.duration = duration;
+    }
+
+    @Override
+    public String toString() {
+        return "The track " + title +
+        " is performed by: " + performer;
     }
 
     public String getPerformer() {
         return performer;
     }
 
-    public void setPerformer(String performer) {
-        this.performer = performer;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public long getDuration() {
         return duration;
     }
 
-    public void setDuration(long duration) {
-        this.duration = duration;
-    }
 
 }

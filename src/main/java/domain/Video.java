@@ -1,41 +1,49 @@
 package domain;
 
-import java.util.Calendar;
+import java.util.Date;
 
 public class Video extends Track {
 
     private int playCount;
-    private Calendar publicationDate;
+    private Date publicationDate;
     private String description;
 
-    public Video(String performer, String title, String url, long duration) {
+    public Video(String performer, String title, String url, int duration, int playCount, Date publicationDate, String description) {
         super(performer, title, url, duration);
+        this.playCount = playCount;
+        this.publicationDate = publicationDate;
+        this.description = description;
     }
 
     public int getPlayCount() {
         return playCount;
     }
 
-    public void setPlayCount(int playCount) {
-        this.playCount = playCount;
-    }
-
-    public Calendar getPublicationDate() {
+    public Date getPublicationDate() {
         return publicationDate;
-    }
-
-    public void setPublicationDate(Calendar publicationDate) {
-        this.publicationDate = publicationDate;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    @Override
+    public String getPerformer() {
+        return super.getPerformer();
     }
 
+    @Override
+    public String getTitle() {
+        return super.getTitle();
+    }
 
+    @Override
+    public String getUrl() {
+        return super.getUrl();
+    }
 
+    @Override
+    public long getDuration() {
+        return super.getDuration();
+    }
 }
