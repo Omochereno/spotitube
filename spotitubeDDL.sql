@@ -12,7 +12,7 @@ CREATE TABLE `track` (
   `idtrack` int(11) NOT NULL,
   `title` varchar(45) DEFAULT NULL,
   `performer` varchar(45) DEFAULT NULL,
-  `duartion` int(11) DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
   `album` varchar(45) DEFAULT NULL,
   `playcount` varchar(45) DEFAULT NULL,
   `publicationDate` date DEFAULT NULL,

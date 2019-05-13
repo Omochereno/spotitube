@@ -1,43 +1,89 @@
 package domain;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public abstract class Track {
+@XmlRootElement
+public class Track {
 
-    //Variables
-    private String performer;
+    private int id;
     private String title;
-    private String url;
+    private String performer;
     private int duration;
+    private String album;
+    private int playcount;
+    private String publicationDate;
+    private String description;
+    private boolean offlineAvailable;
 
-    public Track(String performer, String title, String url, int duration) {
-        this.performer = performer;
-        this.title = title;
-        this.url = url;
-        this.duration = duration;
+    public int getId() {
+        return id;
     }
 
-    @Override
-    public String toString() {
-        return "The track " + title +
-        " is performed by: " + performer;
-    }
-
-    public String getPerformer() {
-        return performer;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getUrl() {
-        return url;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public long getDuration() {
+    public String getPerformer() {
+        return performer;
+    }
+
+    public void setPerformer(String performer) {
+        this.performer = performer;
+    }
+
+    public int getDuration() {
         return duration;
     }
 
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+
+    public int getPlaycount() {
+        return playcount;
+    }
+
+    public void setPlaycount(int playcount) {
+        this.playcount = playcount;
+    }
+
+    public String getPublicationDate() {
+        return publicationDate;
+    }
+
+    public void setPublicationDate(String publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isOfflineAvailable() {
+        return offlineAvailable;
+    }
+
+    public void setOfflineAvailable(boolean offlineAvailable) {
+        this.offlineAvailable = offlineAvailable;
+    }
 }

@@ -3,20 +3,17 @@ package datasource;
 import domain.Playlist;
 
 import java.lang.reflect.Array;
+import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface IPlaylistDAO {
 
-    public ArrayList<Playlist> list();
+    List<Playlist> getPlaylists();
 
-    public ArrayList<Playlist> findByOwner(String owner);
+    List<Playlist> findByOwner(String owner);
 
-    public ArrayList<Playlist> findByName(String name);
+    boolean deletePlaylist(int id);
 
-    public void save(Playlist playlist);
-
-    public void update(Playlist playlist);
-
-    public void delete(int playListId);
+    boolean createPlaylist(Playlist playlist);
 }

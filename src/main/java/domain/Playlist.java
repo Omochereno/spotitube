@@ -1,49 +1,47 @@
 package domain;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlRootElement
 public class Playlist {
 
     private int id;
-    private Owner owner;
     private String name;
-    private List<Availability> tracks = new ArrayList<>();
+    private boolean owner;
+    private List<Track> tracks = new ArrayList<>();
 
-    public Playlist(Owner owner, String name) {
-        this.owner = owner;
-        this.name = name;
+    public int getId() {
+        return id;
     }
 
-    public Playlist(int id, String Owner, String name, List<Availability> tracks) {
+    public void setId(int id) {
         this.id = id;
-        this.owner = owner;
-        this.name = name;
-        this.tracks = tracks;
-    }
-
-    public void addTrack(Track track, boolean isOfflineAvailable){
-        tracks.add(new Availability(this.getName(), track, isOfflineAvailable));
-    }
-
-    public void setName(String name){
-        this.name = name;
     }
 
     public String getName() {
         return name;
     }
-    public Owner getOwner() {
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isOwner() {
         return owner;
     }
 
-    public List<Availability> getTracks() {
+    public void setOwner(boolean owner) {
+        this.owner = owner;
+    }
+
+    public List<Track> getTracks() {
         return tracks;
     }
 
-    public void setTracks(List<Availability> tracks) {
+    public void setTracks(List<Track> tracks) {
         this.tracks = tracks;
     }
-
 }

@@ -18,7 +18,7 @@ public class FileLogger {
         try {
             handler = new FileHandler(LOGFILE_NAME, true);
         } catch (IOException e) {
-            Logger.getLogger("logger").severe("something went wrong with the logfile" + e.getMessage());
+            Logger.getLogger("logger").severe("something went wrong with the logfile: " + e.getMessage());
         }
     }
 

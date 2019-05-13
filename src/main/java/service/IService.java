@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface IPlaylistService {
+public interface IService {
 
 
 }

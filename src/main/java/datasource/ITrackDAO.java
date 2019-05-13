@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ITrackDAO {
 
-    List<Track> list() throws SQLException;
+    List<Track> getTracksFromPlaylist(int id, boolean in);
 
-    List<Track> findByTitle(String title) throws SQLException;
+    Track getTrackById(int id);
 }

@@ -1,14 +1,10 @@
 package datasource;
 
-import datasource.util.ConnectionManager;
 import datasource.util.FileLogger;
 import datasource.util.IConnectionManager;
-import domain.Song;
 import domain.Track;
-import domain.Video;
 
 import javax.inject.Inject;
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,13 +24,27 @@ public class TrackDAO implements ITrackDAO{
         this.logger = logger;
     }
 
+    private List<Track> getTracksFromResultSet(ResultSet res) throws SQLException {
+        List<Track> result = new ArrayList<>();
 
-    @Override
-    public List list() throws SQLException {
-        return null;
+        while(res.next()){
+            Track track = new Track();
+            track.setId(res.getInt("idtrack"));
+            track.setTitle(res.getString("title"));
+            track.setPerformer(res.getString("performer"));
+            track.setDuration(res.getInt("duration"));
+            track.setAlbum(res.getString("album"));
+            track.setPlaycount(res.getInt("playcount"));
+            track.setPublicationDate(res.getString("publicationDate"));
+            track.setDescription(res.getString("description"));
+            track.setOfflineAvailable(res.getBoolean("offlineAvailable"));
+
+            result.add(track);
+        }
+        res.close();
+        return result;
     }
 
-    @Override
     public List<Track> findByTitle(String title) throws SQLException {
         List<Track> tracks = null;
 
@@ -51,21 +61,37 @@ public class TrackDAO implements ITrackDAO{
         return tracks;
     }
 
-    private List<Track> getTracksFromResultSet(ResultSet res) throws SQLException {
-        List<Track> result = new ArrayList<>();
+    @Override
+    public List<Track> getTracksFromPlaylist(int id, boolean in) {
+        List<Track> tracks = null;
 
-        while(res.next()){
-            if(res.getString("album") == null || res.getString("album").isEmpty()){
-                result.add(new Video(res.getString("performer"), res.getString("title"), res.getString("url"),
+        String query = null;
+        if(in)
+            query = "SELECT * FROM track WHERE idtrack IN (SELECT idtrack FROM trackinplaylist where idplaylist = ?)";
+        else
+            query = "SELECT * FROM track WHERE idtrack NOT IN (SELECT idtrack FROM trackinplaylist where idplaylist = ?)";
 
-                        res.getInt("duration"), res.getInt("playcount"), res.getDate("publicationDate"), res.getString("description")));
-
-            } else {
-                result.add(new Song(res.getString("album"), res.getString("performer"), res.getString("title"), res.getString("url"), res.getInt("duration")));
-            }
+        try (Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
+            preparedStatement.setInt(1, id);
+            tracks = getTracksFromResultSet(preparedStatement.executeQuery());
+        } catch (SQLException e) {
+            logger.log(getClass().getName(), Level.SEVERE, "Query error: " + e.getMessage());
         }
-        res.close();
-        return result;
+        return tracks;
     }
 
+    @Override
+    public Track getTrackById(int id) {
+        String query = "SELECT * FROM track where idtrack = ?";
+
+        List<Track> track = null;
+        try(Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
+            preparedStatement.setInt(1, id);
+            track = getTracksFromResultSet(preparedStatement.executeQuery());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return track.get(0);
+    }
 }

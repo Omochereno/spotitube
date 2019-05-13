@@ -1,13 +1,21 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="spotitube:war exploded">
     <output-path>$PROJECT_DIR$/target/spotitube</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>true</exploded>
+        <module>spotitube</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
     <root id="root">
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="spotitube" />
         </element>
         <element id="directory" name="lib">
-          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.34" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.13" />
+          <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.6.1" />
           <element id="library" level="project" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0" />
           <element id="library" level="project" name="Maven: org.glassfish.jersey.core:jersey-server:2.17" />
           <element id="library" level="project" name="Maven: org.glassfish.jersey.core:jersey-common:2.17" />
@@ -23,6 +31,7 @@
           <element id="library" level="project" name="Maven: org.glassfish.hk2:hk2-locator:2.4.0-b10" />
           <element id="library" level="project" name="Maven: org.javassist:javassist:3.18.1-GA" />
           <element id="library" level="project" name="Maven: javax.validation:validation-api:1.1.0.Final" />
+          <element id="library" level="project" name="Maven: com.airhacks:jaxrs-cors:0.0.1" />
         </element>
       </element>
       <element id="directory" name="META-INF">
