@@ -4,7 +4,7 @@ import domain.Playlist;
 
 import java.util.List;
 
-public class PlaylistJS {
+public class Playlists {
 
     private List<Playlist> playlists;
     private int length;

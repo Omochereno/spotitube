@@ -3,6 +3,7 @@ package datasource;
 import datasource.util.ConnectionManager;
 import datasource.util.FileLogger;
 import datasource.util.IConnectionManager;
+import datasource.util.UtilManager;
 import domain.Playlist;
 
 import javax.inject.Inject;
@@ -17,30 +18,10 @@ import java.util.logging.Level;
 public class PlaylistDAO implements IPlaylistDAO{
 
     private IConnectionManager connectionManager;
-    private FileLogger logger;
 
     @Inject
-    public PlaylistDAO(ConnectionManager connectionManager, FileLogger logger){
+    public PlaylistDAO(ConnectionManager connectionManager){
         this.connectionManager = connectionManager;
-        this.logger = logger;
-    }
-
-
-    @Override
-    public List<Playlist> findByOwner(String owner) {
-        List<Playlist> playList = null;
-
-        String query = "SELECT *" +
-                "FROM Playlist P" +
-                " WHERE owner lIKE ?";
-
-        try(Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, owner);
-            playList = getPlaylistFromResultSet(preparedStatement.executeQuery());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return playList;
     }
 
     @Override
@@ -50,30 +31,30 @@ public class PlaylistDAO implements IPlaylistDAO{
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
     }
 
     @Override
-    public boolean createPlaylist(Playlist playlist) {
+    public boolean createPlaylist(String owner, Playlist playlist) {
 
         String query = "INSERT INTO playlist (name, owner) VALUES (?, ?)";
 
         try(Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
             preparedStatement.setString(1, playlist.getName());
-            preparedStatement.setString(2, "Testowner");
+            preparedStatement.setString(2, owner);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, e.getMessage());
             return false;
         }
         return true;
     }
 
 
-    private List<Playlist> getPlaylistFromResultSet(ResultSet res) throws SQLException {
+    private List<Playlist> getPlaylistFromResultSet(ResultSet res, String token) throws SQLException {
         List<Playlist> result = new ArrayList<>();
 
         while(res.next()){
@@ -81,26 +62,40 @@ public class PlaylistDAO implements IPlaylistDAO{
             Playlist playlist = new Playlist();
             playlist.setId(res.getInt("idplaylist"));
             playlist.setName(res.getString("name"));
-            //#TODO Set owner according to the current user, true if current owner is the user, false otherwise
-            playlist.setOwner(true);
+            String ownerToken = UtilManager.generateToken(res.getString("owner"));
+            playlist.setOwner(token.equals(ownerToken)? true : false);
             result.add(playlist);
-
         }
         res.close();
         return result;
     }
 
     @Override
-    public List<Playlist> getPlaylists() {
+    public List<Playlist> getPlaylists(String token) {
         List<Playlist> playlists = null;
         String query = "SELECT * FROM playlist";
 
         try(Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
-            playlists = getPlaylistFromResultSet(preparedStatement.executeQuery());
+            playlists = getPlaylistFromResultSet(preparedStatement.executeQuery(), token);
         } catch (SQLException e) {
-            logger.log(getClass().getName(), Level.SEVERE, "Query error: " + e.getMessage());
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, "Query error: " + e.getMessage());
         }
 
         return playlists;
+    }
+
+    @Override
+    public boolean editPlaylist(Playlist playlist) {
+        String query = "UPDATE playlist SET name = ? WHERE idplaylist = ?";
+
+        try(Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
+            preparedStatement.setString(1, playlist.getName());
+            preparedStatement.setInt(2, playlist.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, e.getMessage());
+            return false;
+        }
+        return true;
     }
 }

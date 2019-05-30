@@ -2,12 +2,13 @@ package datasource;
 
 import domain.Track;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface ITrackDAO {
 
-    List<Track> getTracksFromPlaylist(int id, boolean in);
+    List<Track> getTracks(int id, boolean inPlaylist);
 
-    Track getTrackById(int id);
+    boolean deleteTrackFromPlaylist(int playlistId, int trackId);
+
+    boolean addTracktoPlaylist(int playlistId, Track trackId);
 }

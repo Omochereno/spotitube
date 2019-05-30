@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileLogger {
+    private static FileLogger fileLogger = null;
+
     private static final String LOGFILE_NAME = "error.log";
     private Handler handler;
 
@@ -14,9 +16,16 @@ public class FileLogger {
         initializeLogger();
     }
 
+    public static FileLogger getInstance(){
+      if(fileLogger == null){
+          fileLogger = new FileLogger();
+      }
+      return fileLogger;
+    }
+
     private void initializeLogger() {
         try {
-            handler = new FileHandler(LOGFILE_NAME, true);
+                handler = new FileHandler(LOGFILE_NAME, true);
         } catch (IOException e) {
             Logger.getLogger("logger").severe("something went wrong with the logfile: " + e.getMessage());
         }

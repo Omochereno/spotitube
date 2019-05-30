@@ -1,5 +1,6 @@
 package datasource.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -10,11 +11,10 @@ public class DatabaseProperties {
     Properties property = new Properties();
 
     public DatabaseProperties() throws IOException, ClassNotFoundException {
-        FileLogger logger = new FileLogger();
         try {
             property.load(getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILE));
         } catch (IOException e) {
-            logger.log(getClass().getName(), Level.SEVERE, "Unable to read database property");
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, "Unable to read database property");
         }
         Class.forName(property.getProperty("driverMYSQL"));
     }

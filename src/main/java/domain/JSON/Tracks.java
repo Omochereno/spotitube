@@ -4,7 +4,7 @@ import domain.Track;
 
 import java.util.List;
 
-public class TrackJS {
+public class Tracks {
 
     private List<Track> tracks;
 

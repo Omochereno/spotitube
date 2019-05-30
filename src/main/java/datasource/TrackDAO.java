@@ -16,14 +16,18 @@ import java.util.logging.Level;
 public class TrackDAO implements ITrackDAO{
 
     private IConnectionManager connectionManager;
-    private FileLogger logger;
 
     @Inject
-    public TrackDAO(IConnectionManager connectionManager, FileLogger logger){
+    public TrackDAO(IConnectionManager connectionManager){
         this.connectionManager = connectionManager;
-        this.logger = logger;
     }
 
+    /**
+     * Helper method to get track objects from the resultset
+     * @param res
+     * @return
+     * @throws SQLException
+     */
     private List<Track> getTracksFromResultSet(ResultSet res) throws SQLException {
         List<Track> result = new ArrayList<>();
 
@@ -45,53 +49,53 @@ public class TrackDAO implements ITrackDAO{
         return result;
     }
 
-    public List<Track> findByTitle(String title) throws SQLException {
-        List<Track> tracks = null;
-
-        String query = "SELECT * FROM track " +
-                "WHERE title LIKE ?";
-
-        try (Connection connection = connectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)){
-            preparedStatement.setString(1, title);
-            tracks = getTracksFromResultSet(preparedStatement.executeQuery());
-        } catch (SQLException e) {
-            logger.log(getClass().getName(), Level.SEVERE, "Query error: " + e.getMessage());
-        }
-        return tracks;
-    }
-
     @Override
-    public List<Track> getTracksFromPlaylist(int id, boolean in) {
+    public List<Track> getTracks(int id, boolean inPlaylist) {
         List<Track> tracks = null;
 
         String query = null;
-        if(in)
-            query = "SELECT * FROM track WHERE idtrack IN (SELECT idtrack FROM trackinplaylist where idplaylist = ?)";
+        if(!inPlaylist)
+            query = "select * from track left outer join trackinplaylist on track.idtrack = trackinplaylist.idtrack where track.idtrack not in (select idtrack from trackinplaylist where idplaylist = ?)";
         else
-            query = "SELECT * FROM track WHERE idtrack NOT IN (SELECT idtrack FROM trackinplaylist where idplaylist = ?)";
+            query = "select * from track inner join trackinplaylist on track.idtrack = trackinplaylist.idtrack where trackinplaylist.idplaylist = ?";
 
         try (Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
             preparedStatement.setInt(1, id);
             tracks = getTracksFromResultSet(preparedStatement.executeQuery());
         } catch (SQLException e) {
-            logger.log(getClass().getName(), Level.SEVERE, "Query error: " + e.getMessage());
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, "Query error: " + e.getMessage());
         }
         return tracks;
     }
 
     @Override
-    public Track getTrackById(int id) {
-        String query = "SELECT * FROM track where idtrack = ?";
+    public boolean deleteTrackFromPlaylist(int playlistId, int trackId) {
+        String query = "DELETE FROM trackinplaylist WHERE idtrack = ? AND idplaylist = ?";
 
-        List<Track> track = null;
-        try(Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)){
-            preparedStatement.setInt(1, id);
-            track = getTracksFromResultSet(preparedStatement.executeQuery());
+        try (Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, trackId);
+            preparedStatement.setInt(2, playlistId);
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, e.getMessage());
+            return false;
         }
+        return true;
+    }
 
-        return track.get(0);
+    @Override
+    public boolean addTracktoPlaylist(int playlistId, Track track) {
+        String query = "INSERT INTO trackinplaylist (idtrack, idplaylist, offlineAvailable) VALUES (?, ?, ?)";
+
+        try (Connection connection = connectionManager.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, track.getId());
+            preparedStatement.setInt(2, playlistId);
+            preparedStatement.setBoolean(3, track.isOfflineAvailable());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            FileLogger.getInstance().log(getClass().getName(), Level.SEVERE, e.getMessage());
+            return false;
+        }
+        return true;
     }
 }
